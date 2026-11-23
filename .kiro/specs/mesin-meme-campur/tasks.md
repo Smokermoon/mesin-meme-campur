@@ -33,3 +33,8 @@
   - [x] 10.1 Local serve test, click through every flow
   - [x] 10.2 Screenshot the app and the exported PNG
   - [x] 10.3 Tick off finished tasks in this file
+- [x] 11. Surprise me button (added in a live Kiro spec session)
+  - [x] 11.1 One click randomizes template, remix mode, and a fresh
+        caption mix through the existing state flow
+  - [x] 11.2 setMode() helper and optional topic override in
+        generateCaptions() to support it without changing old flows
