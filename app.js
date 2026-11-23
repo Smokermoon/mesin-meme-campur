@@ -288,6 +288,13 @@ function setNote(id, text, isError) {
   el.classList.toggle("error", !!isError);
 }
 
+function setMode(mode) {
+  state.mode = mode;
+  document.querySelectorAll("#modeRow .mode").forEach((b) => {
+    b.classList.toggle("active", b.dataset.mode === mode);
+  });
+}
+
 /* ------------------------------------------------------------------ */
 /* Image sources                                                       */
 /* ------------------------------------------------------------------ */
@@ -425,9 +432,9 @@ async function apiCaptions(topic) {
   }));
 }
 
-async function generateCaptions() {
+async function generateCaptions(overrideTopic) {
   const btn = $("generateBtn");
-  const topic = $("topicInput").value;
+  const topic = overrideTopic !== undefined ? overrideTopic : $("topicInput").value;
   const { key } = currentSettings();
   btn.disabled = true;
   try {
@@ -499,15 +506,55 @@ function applyCaption(top, bottom) {
 }
 
 function randomMix() {
-  if (state.captions.length < 2) {
+  if (state.captions.length < 1) {
     setNote("captionSource", "Generate captions first, then campur them.", true);
-    return;
+    return null;
+  }
+  if (state.captions.length === 1) {
+    const only = state.captions[0];
+    applyCaption(only.top, only.bottom);
+    const msg = `Only one caption (${only.voice}) — using it as-is.`;
+    setNote("captionSource", msg, false);
+    return msg;
   }
   const a = pick(state.captions);
   let b = pick(state.captions);
   if (b === a) b = state.captions[(state.captions.indexOf(a) + 1) % state.captions.length];
   applyCaption(a.top, b.bottom);
-  setNote("captionSource", `Campur result: top from “${a.voice}”, bottom from “${b.voice}”.`, false);
+  const msg = `Campur result: top from “${a.voice}”, bottom from “${b.voice}”.`;
+  setNote("captionSource", msg, false);
+  return msg;
+}
+
+/* ------------------------------------------------------------------ */
+/* Surprise me: random template + random remix + a fresh caption mix   */
+/* ------------------------------------------------------------------ */
+
+const FUN_TOPICS = [
+  "monday", "my cat", "deploy day", "deadlines", "the group chat",
+  "wifi going down", "snack theft", "the last slice", "overtime",
+  "the algorithm", "deep-fried everything", "cat logic",
+];
+
+async function surpriseMe() {
+  const btn = $("surpriseBtn");
+  btn.disabled = true;
+  setNote("imageNote", "Mixing the whole machine…", false);
+  try {
+    // 1. random base template
+    const i = Math.floor(Math.random() * TEMPLATES.length);
+    markTemplateActive(i);
+    // 2. random remix mode (set before render so it applies in one pass)
+    setMode(pick(["classic", "deepfried", "pixel", "glitch", "vintage"]));
+    setBase(TEMPLATES[i].canvas, `Surprise! Template: ${TEMPLATES[i].name} · remix: ${state.mode}.`);
+    // 3. fresh captions + an automatic campur mix
+    const topic = $("topicInput").value.trim() || pick(FUN_TOPICS);
+    await generateCaptions(topic);
+    const msg = randomMix();
+    if (msg) setNote("captionSource", `${state.captionSource} ${msg}`, false);
+  } finally {
+    btn.disabled = false;
+  }
 }
 
 /* ------------------------------------------------------------------ */
@@ -638,15 +685,14 @@ function init() {
 
   document.querySelectorAll("#modeRow .mode").forEach((btn) => {
     btn.addEventListener("click", () => {
-      document.querySelectorAll("#modeRow .mode").forEach((b) => b.classList.remove("active"));
-      btn.classList.add("active");
-      state.mode = btn.dataset.mode;
+      setMode(btn.dataset.mode);
       render();
     });
   });
 
-  $("generateBtn").addEventListener("click", generateCaptions);
+  $("generateBtn").addEventListener("click", () => generateCaptions());
   $("mixBtn").addEventListener("click", randomMix);
+  $("surpriseBtn").addEventListener("click", surpriseMe);
   $("downloadBtn").addEventListener("click", downloadPng);
   $("shareBtn").addEventListener("click", sharePng);
 
