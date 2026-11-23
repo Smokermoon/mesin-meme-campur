@@ -1,0 +1,10 @@
+# OS / editor noise
+.DS_Store
+Thumbs.db
+*.log
+
+# Local test output
+test-output/
+
+# NOTE: .kiro/ is intentionally NOT ignored.
+# The Kiroween rules require the .kiro folder in the public repo.
