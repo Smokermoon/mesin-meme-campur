@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Mesin Meme Campur — Meme Mixer Machine</title>
+<meta name="description" content="A Frankenstein meme studio: a photo API, an AI caption machine, canvas remix filters, and a text editor stitched into one fun tool.">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand">
+    <div class="logo" aria-hidden="true">🧪</div>
+    <div>
+      <h1>Mesin Meme Campur</h1>
+      <p class="tagline">The Meme Mixer Machine. Many services, one monster of a meme studio.</p>
+    </div>
+  </div>
+  <details class="settings">
+    <summary>⚙️ Caption AI settings</summary>
+    <div class="settings-body">
+      <label>
+        Provider
+        <select id="providerSelect">
+          <option value="groq">Groq</option>
+          <option value="openrouter">OpenRouter</option>
+        </select>
+      </label>
+      <label>
+        Model
+        <input id="modelInput" type="text" value="llama-3.3-70b-versatile" autocomplete="off">
+      </label>
+      <label>
+        API key (yours, stays in your browser)
+        <input id="apiKeyInput" type="password" placeholder="Paste your key here" autocomplete="off">
+      </label>
+      <label class="check">
+        <input id="rememberKey" type="checkbox"> Remember the key on this device (localStorage)
+      </label>
+      <p class="hint">No key? No problem. The caption machine runs in demo mode with a local
+      template engine, so the app still works end to end. Keys are never sent anywhere
+      except the provider you picked.</p>
+    </div>
+  </details>
+</header>
+
+<main class="layout">
+  <section class="stage-col">
+    <div class="stage-wrap">
+      <canvas id="stage" width="900" height="900"></canvas>
+    </div>
+    <div class="export-row">
+      <button id="downloadBtn" class="primary">⬇️ Download PNG</button>
+      <button id="shareBtn">🔗 Share</button>
+      <span id="exportNote" class="note" role="status"></span>
+    </div>
+    <p class="stitch-note">Stitched together from: Lorem Picsum photos · Groq / OpenRouter
+    caption AI · Canvas remix filters · a hand-rolled text editor · the Web Share API.
+    No build step, no server, just static files.</p>
+  </section>
+
+  <section class="controls">
+    <div class="panel">
+      <h2>1 · Base image</h2>
+      <div id="templateRow" class="template-row"></div>
+      <div class="row">
+        <label class="file-btn">
+          📁 Upload image
+          <input id="uploadInput" type="file" accept="image/*" hidden>
+        </label>
+        <button id="randomPhotoBtn">🎲 Random photo (Picsum)</button>
+      </div>
+      <p id="imageNote" class="note" role="status"></p>
+      <p class="hint">Tip: you can also drag and drop an image onto the canvas.</p>
+    </div>
+
+    <div class="panel">
+      <h2>2 · Remix mode</h2>
+      <div id="modeRow" class="mode-row">
+        <button data-mode="classic" class="mode active">Classic</button>
+        <button data-mode="deepfried" class="mode">Deep Fried 🔥</button>
+        <button data-mode="pixel" class="mode">Pixel</button>
+        <button data-mode="glitch" class="mode">Glitch</button>
+        <button data-mode="vintage" class="mode">Vintage</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <h2>3 · Caption machine</h2>
+      <label>
+        Topic (optional)
+        <input id="topicInput" type="text" placeholder="e.g. monday, my cat, deploy day" autocomplete="off">
+      </label>
+      <div class="row">
+        <button id="generateBtn" class="primary">✨ Generate captions</button>
+        <button id="mixBtn">🥤 Campur acak (random mix)</button>
+      </div>
+      <p id="captionSource" class="note" role="status"></p>
+      <div id="captionList" class="caption-list"></div>
+      <p class="hint">Each card has its own voice. “Top” and “Bottom” lift one line from a
+      card into the editor, so you can campur (mix) lines from different cards.</p>
+    </div>
+
+    <div class="panel">
+      <h2>4 · Text editor</h2>
+      <label>
+        Top text
+        <input id="topText" type="text" placeholder="TOP TEXT" autocomplete="off">
+      </label>
+      <label>
+        Bottom text
+        <input id="bottomText" type="text" placeholder="BOTTOM TEXT" autocomplete="off">
+      </label>
+      <label>
+        Font size
+        <input id="fontSize" type="range" min="60" max="160" value="100">
+      </label>
+      <label>
+        Outline thickness
+        <input id="outlineSize" type="range" min="0" max="30" value="16">
+      </label>
+    </div>
+  </section>
+</main>
+
+<footer>
+  <p>Built with Kiro spec-driven development for Kiroween, Frankenstein category.
+  MIT licensed. Made by Ririn Volina.</p>
+</footer>
+
+<script src="app.js"></script>
+</body>
+</html>
